@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HDMAIL — Kunlik eslatmalar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+/* Kun rejimi: yorqin havo rang fon + apelsin urg'u */
+:root{
+  --bg:#1EAEF2;
+  --bg-img:linear-gradient(180deg,#5FD0FF 0%,#26B4F5 50%,#0E9BE6 100%);
+  --bg-ink:#06283D;
+  --surface:#FFFFFF;
+  --surface-2:#E6F6FF;
+  --ink:#0E2433;
+  --ink-soft:#4C6E86;
+  --line:#C6E6F8;
+  --accent:#FF7A00;
+  --accent-2:#FFA23A;
+  --accent-soft:#FFE8D1;
+  --accent-ink:#B34700;
+  --on-accent:#16110A;
+  --hero-bg:linear-gradient(135deg,#FF7A00 0%,#FFA23A 100%);
+  --hero-ink:#16110A;
+  --hero-accent:#16110A;
+  --hero-chip:rgba(255,255,255,.28);
+  --fab-bg:linear-gradient(135deg,#FF7A00,#FFA23A);
+  --fab-ink:#16110A;
+  --tab-on-bg:#FF7A00;
+  --tab-on-ink:#16110A;
+  --ok:#17A673; --ok-soft:#DDF5EC;
+  --warn:#9A5B00; --warn-soft:#FFE9C7;
+  --danger:#E5484D; --danger-soft:#FCE3E4;
+  --shadow:0 10px 28px rgba(4,70,120,.25);
+  --font-head:"Times New Roman", Times, "Liberation Serif", serif;
+  --font-body:"Times New Roman", Times, "Liberation Serif", serif;
+}
+/* Tun rejimi: to'q fon, havo rang va apelsin urg'u */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#06121C;
+    --bg-img:radial-gradient(700px 380px at 100% -5%, rgba(38,180,245,.34), transparent 65%), radial-gradient(500px 300px at 0% 100%, rgba(255,122,0,.16), transparent 70%);
+    --bg-ink:#D8F0FF;
+    --surface:#0F2230; --surface-2:#173246; --ink:#EAF6FF; --ink-soft:#8FB3CC; --line:#1F3B50;
+    --accent-soft:#3A2410; --accent-ink:#FFB066;
+    --hero-bg:linear-gradient(135deg,#17A2E8,#5FD0FF); --hero-ink:#05202F; --hero-accent:#05202F; --hero-chip:rgba(0,0,0,.14);
+    --tab-on-bg:#35BDF5; --tab-on-ink:#05202F;
+    --ok-soft:#12372C; --warn:#FFB066; --warn-soft:#3C2B10; --danger-soft:#3E1A1D;
+    --shadow:0 10px 28px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#06121C;
+  --bg-img:radial-gradient(700px 380px at 100% -5%, rgba(38,180,245,.34), transparent 65%), radial-gradient(500px 300px at 0% 100%, rgba(255,122,0,.16), transparent 70%);
+  --bg-ink:#D8F0FF;
+  --surface:#0F2230; --surface-2:#173246; --ink:#EAF6FF; --ink-soft:#8FB3CC; --line:#1F3B50;
+  --accent-soft:#3A2410; --accent-ink:#FFB066;
+  --hero-bg:linear-gradient(135deg,#17A2E8,#5FD0FF); --hero-ink:#05202F; --hero-accent:#05202F; --hero-chip:rgba(0,0,0,.14);
+  --tab-on-bg:#35BDF5; --tab-on-ink:#05202F;
+  --ok-soft:#12372C; --warn:#FFB066; --warn-soft:#3C2B10; --danger-soft:#3E1A1D;
+  --shadow:0 10px 28px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;}
+html,body{min-height:100%;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0;color:var(--ink);font-family:var(--font-body);
+  background-color:var(--bg);background-image:var(--bg-img);background-attachment:fixed;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  -webkit-font-smoothing:antialiased;
+  transition:background-color .25s ease;
+}
+h1,h2,h3{font-family:var(--font-head);margin:0;}
+button{font-family:var(--font-body);cursor:pointer;}
+:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;}
+.app{max-width:640px;margin:0 auto;padding:18px 16px 130px;}
+
+/* hero */
+.hero{
+  background:var(--hero-bg);color:var(--hero-ink);border-radius:26px;padding:22px 22px 18px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.hero::after{content:"";position:absolute;right:-50px;top:-60px;width:190px;height:190px;border-radius:50%;background:var(--hero-chip);}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;position:relative;z-index:1;}
+.hero .date{font-size:13px;opacity:.85;font-weight:500;}
+.hero .clock{font-family:var(--font-head);font-size:44px;font-weight:600;letter-spacing:.02em;line-height:1.1;margin-top:4px;color:var(--hero-accent);}
+.hero-tools{display:flex;gap:8px;}
+.icon-btn{
+  width:40px;height:40px;border-radius:13px;border:none;background:var(--hero-chip);color:var(--hero-ink);
+  font-size:18px;display:flex;align-items:center;justify-content:center;transition:transform .12s ease, opacity .15s;
+}
+.icon-btn:active{transform:scale(.9);}
+.icon-btn.off{opacity:.5;}
+.next-box{margin-top:16px;background:var(--hero-chip);border-radius:16px;padding:12px 14px;font-size:13.5px;position:relative;z-index:1;}
+.next-box b{font-family:var(--font-head);font-size:15px;display:block;margin-top:2px;}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 12px;}
+.stat{background:var(--surface);border-radius:16px;padding:12px;box-shadow:var(--shadow);text-align:center;}
+.stat .n{font-family:var(--font-head);font-size:22px;font-weight:700;display:block;}
+.stat .l{font-size:11.5px;color:var(--ink-soft);}
+
+/* tabs */
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--surface);padding:6px;border-radius:18px;box-shadow:var(--shadow);}
+.tab{
+  border:none;background:transparent;color:var(--ink-soft);border-radius:13px;padding:8px 2px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;font-weight:600;transition:background .15s,color .15s;
+}
+.tab .ic{font-size:18px;line-height:1.2;}
+.tab.active{background:var(--tab-on-bg);color:var(--tab-on-ink);}
+
+.notice{background:var(--warn-soft);color:var(--warn);border-radius:14px;padding:10px 14px;font-size:12.5px;margin:12px 0 0;display:none;}
+.notice.show{display:block;}
+
+.view{display:none;}
+.view.active{display:block;}
+
+.group-title{
+  font-family:var(--font-head);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--bg-ink);margin:22px 4px 10px;opacity:.9;
+}
+.group-title.late{color:#fff;background:var(--danger);display:inline-block;padding:3px 10px;border-radius:20px;opacity:1;}
+
+.item{
+  background:var(--surface);border-radius:18px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);
+  display:flex;gap:12px;align-items:flex-start;transition:transform .15s ease;
+}
+.item:hover{transform:translateY(-2px);}
+.check{
+  width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:transparent;flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;transition:all .15s;
+}
+.check:hover{border-color:var(--accent);}
+.item.done .check{background:var(--ok);border-color:var(--ok);}
+.item-main{flex:1;min-width:0;}
+.item-title{font-weight:600;font-size:15.5px;word-wrap:break-word;}
+.item.done .item-title{text-decoration:line-through;color:var(--ink-soft);}
+.item-note{font-size:13px;color:var(--ink-soft);margin-top:3px;word-wrap:break-word;}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.time-chip{
+  display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;
+  padding:4px 10px;border-radius:20px;background:var(--accent-soft);color:var(--accent-ink);
+}
+.time-chip.late{background:var(--danger-soft);color:var(--danger);}
+.time-chip.done{background:var(--ok-soft);color:var(--ok);}
+.time-chip.rep{background:var(--surface-2);color:var(--ink-soft);}
+.item-actions{display:flex;flex-direction:column;gap:6px;}
+.mini{width:32px;height:32px;border-radius:10px;border:none;background:var(--surface-2);color:var(--ink-soft);font-size:14px;}
+.mini:hover{background:var(--accent-soft);color:var(--accent-ink);}
+.mini.star.on{background:var(--accent-2);color:#16110A;}
+.mini.del:hover{background:var(--danger-soft);color:var(--danger);}
+
+.empty{text-align:center;padding:46px 20px;color:var(--bg-ink);font-size:14px;opacity:.85;}
+.empty .big{font-size:44px;display:block;margin-bottom:8px;}
+
+/* calendar */
+.cal{background:var(--surface);border-radius:20px;padding:14px;box-shadow:var(--shadow);margin-top:14px;}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-head h3{font-size:17px;}
+.cal-nav{width:38px;height:38px;border-radius:12px;border:none;background:var(--surface-2);color:var(--ink);font-size:18px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dow{font-size:11px;color:var(--ink-soft);text-align:center;font-weight:600;padding:4px 0;}
+.cal-day{
+  aspect-ratio:1;border:none;background:transparent;color:var(--ink);border-radius:12px;font-size:14px;font-weight:500;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.cal-day:hover{background:var(--surface-2);}
+.cal-day.today{box-shadow:inset 0 0 0 2px var(--accent);}
+.cal-day.sel{background:var(--tab-on-bg);color:var(--tab-on-ink);}
+.cal-day .dot{position:absolute;bottom:5px;width:5px;height:5px;border-radius:50%;background:var(--accent);}
+.cal-day.sel .dot{background:var(--tab-on-ink);}
+.day-head{display:flex;justify-content:space-between;align-items:center;margin:20px 4px 10px;gap:10px;}
+.day-head h3{font-size:16px;color:var(--bg-ink);}
+
+/* music */
+.panel{background:var(--surface);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-top:14px;}
+.panel h3{font-size:17px;margin-bottom:4px;}
+.panel p{font-size:13px;color:var(--ink-soft);margin:0 0 14px;line-height:1.5;}
+.tone-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);}
+.tone-pick{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:transparent;color:transparent;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.tone-pick.on{background:var(--accent);border-color:var(--accent);color:#16110A;}
+.tone-name{flex:1;min-width:0;font-size:14px;font-weight:500;word-wrap:break-word;}
+.tone-name small{display:block;color:var(--ink-soft);font-size:11.5px;font-weight:400;}
+.upload{display:inline-block;text-align:center;}
+
+/* FAB */
+.fab{
+  position:fixed;right:20px;bottom:calc(22px + env(safe-area-inset-bottom,0px));
+  width:64px;height:64px;border-radius:22px;border:none;background:var(--fab-bg);color:var(--fab-ink);font-size:32px;font-weight:600;
+  box-shadow:0 14px 30px rgba(0,0,0,.38);transition:transform .15s cubic-bezier(.34,1.56,.64,1);z-index:30;line-height:1;
+}
+.fab:hover{transform:translateY(-3px) scale(1.05);}
+.fab:active{transform:scale(.92);}
+
+/* sheets */
+.overlay{position:fixed;inset:0;background:rgba(10,8,5,.6);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(3px);}
+.overlay.show{display:flex;}
+.sheet{
+  background:var(--surface);color:var(--ink);width:100%;max-width:560px;border-radius:26px 26px 0 0;
+  padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));animation:up .22s ease;max-height:92vh;overflow-y:auto;
+}
+@keyframes up{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+.sheet h3{font-size:20px;margin-bottom:14px;}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.field label{font-size:12px;font-weight:600;color:var(--ink-soft);}
+.field input,.field textarea,.field select{
+  font-family:var(--font-body);font-size:15px;padding:12px 13px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--ink);
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);outline:none;}
+.field textarea{min-height:60px;resize:vertical;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{padding:7px 12px;border-radius:20px;border:1.5px solid var(--line);background:transparent;color:var(--ink-soft);font-size:12.5px;font-weight:600;}
+.chip:hover{border-color:var(--accent);color:var(--accent-ink);}
+.check-row{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;margin:2px 0 14px;}
+.check-row input{width:20px;height:20px;accent-color:var(--accent);}
+.btn{border:none;border-radius:14px;padding:13px 20px;font-size:15px;font-weight:700;transition:transform .12s ease;}
+.btn:active{transform:scale(.96);}
+.btn.small{padding:9px 14px;font-size:13px;border-radius:12px;}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--on-accent);flex:1;}
+.btn.ghost{background:var(--surface-2);color:var(--ink);}
+.btn.ok{background:var(--ok);color:#fff;flex:1;}
+.btn.dark{background:var(--tab-on-bg);color:var(--tab-on-ink);}
+.btn-row{display:flex;gap:10px;margin-top:6px;}
+
+/* alarm */
+.alarm{align-items:center;}
+.alarm .sheet{border-radius:26px;margin:16px;text-align:center;padding-top:28px;animation:pop .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(.8);opacity:0;}to{transform:none;opacity:1;}}
+.bell{font-size:52px;display:inline-block;animation:ring 1s ease-in-out infinite;}
+@keyframes ring{0%,100%{transform:rotate(0);}20%{transform:rotate(18deg);}40%{transform:rotate(-16deg);}60%{transform:rotate(10deg);}80%{transform:rotate(-6deg);}}
+.alarm h3{font-size:22px;margin:10px 0 4px;}
+.alarm .at{color:var(--accent-ink);font-weight:700;font-family:var(--font-head);font-size:18px;}
+.alarm p{color:var(--ink-soft);font-size:14px;margin:8px 0 18px;}
+.alarm .btn-row{flex-direction:column;}
+.alarm .btn.ghost{width:100%;}
+/* ===== Qalqib turuvchi noodatiy tugmalar ===== */
+@keyframes bob{0%,100%{translate:0 0;}50%{translate:0 -5px;}}
+@keyframes morph{
+  0%,100%{border-radius:58% 42% 55% 45% / 50% 55% 45% 50%;}
+  50%{border-radius:44% 56% 42% 58% / 56% 44% 56% 44%;}
+}
+@keyframes ripple{0%{transform:scale(.92);opacity:.65;}100%{transform:scale(1.35);opacity:0;}}
+
+.btn{
+  position:relative;overflow:hidden;border-radius:18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.24), 0 14px 22px rgba(0,0,0,.18);
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+  animation:bob 3.6s ease-in-out infinite;
+}
+.btn.ok{animation-delay:.3s;}
+.btn.ghost{animation-delay:.6s;box-shadow:0 5px 0 rgba(0,0,0,.16), 0 10px 18px rgba(0,0,0,.10);}
+.btn::after{
+  content:"";position:absolute;top:0;left:-70%;width:40%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);
+  transform:skewX(-20deg);transition:left .55s ease;pointer-events:none;
+}
+.btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 10px 0 rgba(0,0,0,.2), 0 22px 30px rgba(0,0,0,.22);}
+.btn:hover::after{left:130%;}
+.btn:active{transform:translateY(5px) scale(.98);box-shadow:0 1px 0 rgba(0,0,0,.3), 0 4px 8px rgba(0,0,0,.18);}
+
+.fab{
+  border-radius:58% 42% 55% 45% / 50% 55% 45% 50%;
+  animation:morph 6s ease-in-out infinite, bob 3s ease-in-out infinite;
+  box-shadow:0 7px 0 rgba(0,0,0,.28), 0 18px 34px rgba(0,0,0,.32);
+  width:68px;height:68px;
+}
+.fab::before{
+  content:"";position:absolute;inset:-6px;border:2px solid var(--accent);border-radius:inherit;
+  animation:morph 6s ease-in-out infinite, ripple 2.4s ease-out infinite;pointer-events:none;
+}
+.fab:hover{transform:translateY(-4px) rotate(90deg) scale(1.08);}
+.fab:active{transform:translateY(5px) scale(.94);box-shadow:0 1px 0 rgba(0,0,0,.3), 0 6px 12px rgba(0,0,0,.25);}
+
+.icon-btn{
+  border-radius:15px;box-shadow:0 4px 0 rgba(0,0,0,.22);animation:bob 3.2s ease-in-out infinite;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+}
+.icon-btn:nth-child(2){animation-delay:.25s;}
+.icon-btn:nth-child(3){animation-delay:.5s;}
+.icon-btn:hover{transform:translateY(-3px) scale(1.08);box-shadow:0 8px 0 rgba(0,0,0,.2);}
+.icon-btn:active{transform:translateY(3px) scale(.94);box-shadow:0 1px 0 rgba(0,0,0,.3);}
+
+.tab{transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease, background .15s, color .15s;}
+.tab:not(.active):hover{transform:translateY(-3px);background:var(--surface-2);}
+.tab.active{transform:translateY(-4px);box-shadow:0 6px 0 rgba(0,0,0,.24), 0 12px 18px rgba(0,0,0,.2);animation:bob 3.4s ease-in-out infinite;}
+.tab:active{transform:translateY(2px);}
+
+.chip{
+  border-radius:999px;box-shadow:0 3px 0 var(--line);
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease, border-color .15s;
+}
+.chip:hover{transform:translateY(-3px);box-shadow:0 6px 0 var(--accent);}
+.chip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--accent);}
+
+.mini,.cal-nav{
+  border-radius:12px;box-shadow:0 3px 0 rgba(0,0,0,.16);
+  transition:transform .16s cubic-bezier(.34,1.56,.64,1), box-shadow .16s ease, background .15s;
+}
+.mini:hover,.cal-nav:hover{transform:translateY(-3px) scale(1.08);box-shadow:0 6px 0 rgba(0,0,0,.18);}
+.mini:active,.cal-nav:active{transform:translateY(2px) scale(.94);box-shadow:0 1px 0 rgba(0,0,0,.25);}
+
+.cal-day{transition:transform .16s cubic-bezier(.34,1.56,.64,1), box-shadow .16s ease, background .15s;}
+.cal-day:hover{transform:translateY(-2px);}
+.cal-day.sel{transform:translateY(-3px);box-shadow:0 5px 0 rgba(0,0,0,.26), 0 10px 14px rgba(0,0,0,.18);}
+.check{transition:transform .16s cubic-bezier(.34,1.56,.64,1), background .15s, border-color .15s;}
+.check:hover{transform:scale(1.15) rotate(-8deg);}
+.tone-pick{transition:transform .16s cubic-bezier(.34,1.56,.64,1);}
+.tone-pick:hover{transform:scale(1.15);}
+
+@media (prefers-reduced-motion: reduce){
+  .btn,.fab,.fab::before,.icon-btn,.tab.active{animation:none !important;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hero">
+    <div class="hero-top">
+      <div>
+        <div class="date" id="dateLabel"></div>
+        <div class="clock" id="clock">00:00:00</div>
+      </div>
+      <div class="hero-tools">
+        <button class="icon-btn" id="btnSound" title="Ovoz">🔔</button>
+        <button class="icon-btn" id="btnNotif" title="Bildirishnomalar">📲</button>
+        <button class="icon-btn" id="btnTheme" title="Tun / kun rejimi">🌙</button>
+      </div>
+    </div>
+    <div class="next-box" id="nextBox">Eslatma yo'q</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="n" id="stToday">0</span><span class="l">Bugun</span></div>
+    <div class="stat"><span class="n" id="stDone">0</span><span class="l">Bajarildi</span></div>
+    <div class="stat"><span class="n" id="stLate">0</span><span class="l">Kechikkan</span></div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-view="plan"><span class="ic">📋</span>Reja</button>
+    <button class="tab" data-view="calendar"><span class="ic">📅</span>Kalendar</button>
+    <button class="tab" data-view="fav"><span class="ic">⭐</span>Tanlangan</button>
+    <button class="tab" data-view="music"><span class="ic">🎵</span>Musiqa</button>
+  </div>
+
+  <div class="notice" id="notice">Eslatmalar sahifa ochiq turgandagina chalinadi — ilovani yopmang yoki brauzerda ochiq qoldiring.</div>
+
+  <section class="view active" id="view-plan"><div id="list"></div></section>
+  <section class="view" id="view-calendar"><div id="calendar"></div></section>
+  <section class="view" id="view-fav"><div id="favList"></div></section>
+  <section class="view" id="view-music">
+    <div class="panel">
+      <h3>🎵 Eslatma musiqasi</h3>
+      <p>Telefoningizdagi musiqa yoki playlistdan fayllarni tanlang — eslatma vaqti kelganda shu musiqa chalinadi. Asosiy musiqani shu yerda belgilang, xohlasangiz har bir eslatmaga alohida musiqa ham qo'yishingiz mumkin.</p>
+      <label class="btn primary upload" style="display:block;">+ Musiqa yuklash<input type="file" id="toneFile" accept="audio/*" multiple hidden></label>
+      <div id="toneMsg" style="font-size:12.5px;color:var(--danger);margin-top:8px;"></div>
+      <div id="toneList" style="margin-top:12px;"></div>
+    </div>
+  </section>
+</div>
+
+<button class="fab" id="fab" title="Yangi eslatma">+</button>
+
+<!-- add/edit sheet -->
+<div class="overlay" id="ovForm">
+  <div class="sheet">
+    <h3 id="formTitle">Yangi eslatma</h3>
+    <input type="hidden" id="fId">
+    <div class="field"><label>Nima qilish kerak?</label><input type="text" id="fTitle" placeholder="Masalan: Mijoz bilan uchrashuv"></div>
+    <div class="row2">
+      <div class="field"><label>Sana</label><input type="date" id="fDate"></div>
+      <div class="field"><label>Soat</label><input type="time" id="fTime"></div>
+    </div>
+    <div class="quick">
+      <button class="chip" data-plus="10">+10 daqiqa</button>
+      <button class="chip" data-plus="30">+30 daqiqa</button>
+      <button class="chip" data-plus="60">+1 soat</button>
+      <button class="chip" data-tomorrow="1">Ertaga 09:00</button>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Takrorlanishi</label>
+        <select id="fRepeat"><option value="none">Bir marta</option><option value="daily">Har kuni</option></select>
+      </div>
+      <div class="field"><label>Musiqa</label><select id="fTone"></select></div>
+    </div>
+    <label class="check-row"><input type="checkbox" id="fFav"> ⭐ Tanlanganlarga qo'shish</label>
+    <div class="field"><label>Izoh (ixtiyoriy)</label><textarea id="fNote" placeholder="Qo'shimcha ma'lumot"></textarea></div>
+    <div class="btn-row">
+      <button class="btn ghost" id="btnCancel">Bekor qilish</button>
+      <button class="btn primary" id="btnSave">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- alarm popup -->
+<div class="overlay alarm" id="ovAlarm">
+  <div class="sheet">
+    <span class="bell">🔔</span>
+    <h3 id="alTitle"></h3>
+    <div class="at" id="alTime"></div>
+    <p id="alNote"></p>
+    <div class="btn-row">
+      <button class="btn ok" id="alDone">✓ Bajarildi</button>
+      <button class="btn ghost" id="alSnooze">⏰ 5 daqiqadan keyin eslat</button>
+      <button class="btn ghost" id="alClose">Yopish</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var KEY = "hdmail-reminders-v2";
+var OLD_KEY = "hdmail-reminders-v1";
+var SETTINGS_KEY = "hdmail-reminders-settings-v2";
+var THEME_KEY = "hdmail-reminders-theme";
+var items = [];
+var tones = [];
+var settings = { sound:true, toneId:"beep" };
+var alarmQueue = [];
+var currentAlarm = null;
+var beepTimer = null;
+var ringAudio = null, ringUrl = null;
+var previewAudio = null, previewUrl = null, previewId = null;
+var audioCtx = null;
+var toneDbOk = true;
+var calY, calM, selDate;
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function p2(n){ return String(n).padStart(2,"0"); }
+function iso(d){ return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()); }
+function hm(d){ return p2(d.getHours())+":"+p2(d.getMinutes()); }
+function fmtDate(s){ var p=s.split("-"); return p[2]+"."+p[1]+"."+p[0]; }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function dueOf(r){ return r.snoozeUntil || new Date(r.date+"T"+r.time).getTime(); }
+function todayStr(){ return iso(new Date()); }
+function isDoneNow(r){ return r.repeat==="daily" ? r.lastDone===todayStr() : !!r.done; }
+
+var uzDays = ["Yakshanba","Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba"];
+var uzMonths = ["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentabr","oktabr","noyabr","dekabr"];
+
+/* ---------- storage ---------- */
+function load(){
+  try{
+    var raw = localStorage.getItem(KEY) || localStorage.getItem(OLD_KEY);
+    if(raw) items = JSON.parse(raw);
+  }catch(e){ items = []; }
+  items.forEach(function(r){
+    if(!r.repeat) r.repeat = "none";
+    if(r.toneId==null) r.toneId = "";
+    if(r.fav==null) r.fav = false;
+    if(r.count==null) r.count = 0;
+    if(r.lastDone==null) r.lastDone = "";
+  });
+  try{ var s = localStorage.getItem(SETTINGS_KEY); if(s) settings = Object.assign(settings, JSON.parse(s)); }catch(e){}
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(items)); }catch(e){} }
+function saveSettings(){ try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }catch(e){} }
+
+/* ---------- theme ---------- */
+var btnTheme = document.getElementById('btnTheme');
+function systemTheme(){
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+function applyTheme(t, persist){
+  document.documentElement.setAttribute('data-theme', t);
+  btnTheme.textContent = t==='dark' ? '☀️' : '🌙';
+  btnTheme.title = t==='dark' ? 'Kun rejimiga o\'tish' : 'Tun rejimiga o\'tish';
+  if(persist){ try{ localStorage.setItem(THEME_KEY, t); }catch(e){} }
+}
+btnTheme.addEventListener('click', function(){
+  var cur = document.documentElement.getAttribute('data-theme') || systemTheme();
+  applyTheme(cur==='dark' ? 'light' : 'dark', true);
+});
+(function(){
+  var saved = null;
+  try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
+  applyTheme(saved || systemTheme(), false);
+})();
+
+/* ---------- clock ---------- */
+function tickClock(){
+  var d = new Date();
+  document.getElementById('clock').textContent = p2(d.getHours())+":"+p2(d.getMinutes())+":"+p2(d.getSeconds());
+  document.getElementById('dateLabel').textContent = uzDays[d.getDay()]+", "+d.getDate()+" "+uzMonths[d.getMonth()]+" "+d.getFullYear();
+}
+
+/* ---------- IndexedDB (music) ---------- */
+function openDB(){
+  return new Promise(function(res, rej){
+    try{
+      var rq = indexedDB.open('hdmail-tones', 1);
+      rq.onupgradeneeded = function(){ rq.result.createObjectStore('tones', {keyPath:'id'}); };
+      rq.onsuccess = function(){ res(rq.result); };
+      rq.onerror = function(){ rej(rq.error); };
+    }catch(e){ rej(e); }
+  });
+}
+function dbAll(){
+  return openDB().then(function(db){ return new Promise(function(res, rej){
+    var rq = db.transaction('tones','readonly').objectStore('tones').getAll();
+    rq.onsuccess = function(){ res(rq.result||[]); };
+    rq.onerror = function(){ rej(rq.error); };
+  }); });
+}
+function dbPut(rec){
+  return openDB().then(function(db){ return new Promise(function(res, rej){
+    var tx = db.transaction('tones','readwrite'); tx.objectStore('tones').put(rec);
+    tx.oncomplete = function(){ res(); }; tx.onerror = function(){ rej(tx.error); };
+  }); });
+}
+function dbDel(id){
+  return openDB().then(function(db){ return new Promise(function(res, rej){
+    var tx = db.transaction('tones','readwrite'); tx.objectStore('tones').delete(id);
+    tx.oncomplete = function(){ res(); }; tx.onerror = function(){ rej(tx.error); };
+  }); });
+}
+function findTone(id){ return tones.find(function(t){ return t.id===id; }); }
+
+/* ---------- sound ---------- */
+function ensureAudio(){
+  try{
+    if(!audioCtx){ var AC = window.AudioContext || window.webkitAudioContext; if(AC) audioCtx = new AC(); }
+    if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  }catch(e){}
+}
+function beepOnce(){
+  if(!audioCtx) return;
+  try{
+    var t = audioCtx.currentTime;
+    [880, 1100, 880].forEach(function(f,i){
+      var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t+i*0.22);
+      g.gain.exponentialRampToValueAtTime(0.35, t+i*0.22+0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+i*0.22+0.2);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t+i*0.22); o.stop(t+i*0.22+0.22);
+    });
+  }catch(e){}
+}
+function startBeep(){ ensureAudio(); beepOnce(); beepTimer = setInterval(beepOnce, 1600); }
+function toneFor(r){
+  var id = r.toneId || settings.toneId || "beep";
+  return id==="beep" ? null : (findTone(id) || null);
+}
+function startRinging(r){
+  stopRinging();
+  try{ if(navigator.vibrate) navigator.vibrate([300,150,300,150,300]); }catch(e){}
+  if(!settings.sound) return;
+  stopPreview();
+  var tone = toneFor(r);
+  if(tone){
+    try{
+      ringUrl = URL.createObjectURL(tone.blob);
+      ringAudio = new Audio(ringUrl);
+      ringAudio.loop = true;
+      var p = ringAudio.play();
+      if(p && p.catch) p.catch(function(){ stopRinging(); startBeep(); });
+    }catch(e){ startBeep(); }
+  } else { startBeep(); }
+}
+function stopRinging(){
+  if(beepTimer){ clearInterval(beepTimer); beepTimer = null; }
+  if(ringAudio){ try{ ringAudio.pause(); }catch(e){} ringAudio = null; }
+  if(ringUrl){ try{ URL.revokeObjectURL(ringUrl); }catch(e){} ringUrl = null; }
+}
+function stopPreview(){
+  if(previewAudio){ try{ previewAudio.pause(); }catch(e){} previewAudio = null; }
+  if(previewUrl){ try{ URL.revokeObjectURL(previewUrl); }catch(e){} previewUrl = null; }
+  previewId = null;
+}
+function previewTone(id){
+  if(previewId===id){ stopPreview(); renderMusic(); return; }
+  stopPreview(); ensureAudio();
+  if(id==="beep"){ beepOnce(); return; }
+  var t = findTone(id); if(!t) return;
+  previewUrl = URL.createObjectURL(t.blob);
+  previewAudio = new Audio(previewUrl);
+  previewId = id;
+  previewAudio.onended = function(){ stopPreview(); renderMusic(); };
+  var p = previewAudio.play();
+  if(p && p.catch) p.catch(function(){ stopPreview(); renderMusic(); alert("Musiqani ijro etib bo'lmadi."); });
+  renderMusic();
+}
+
+/* ---------- notifications ---------- */
+function notifState(){ return ("Notification" in window) ? Notification.permission : "unsupported"; }
+function updateTools(){
+  document.getElementById('btnNotif').classList.toggle('off', notifState() !== 'granted');
+  document.getElementById('btnSound').classList.toggle('off', !settings.sound);
+  document.getElementById('notice').classList.toggle('show', items.some(function(r){ return !isDoneNow(r); }));
+}
+document.getElementById('btnNotif').addEventListener('click', function(){
+  ensureAudio();
+  if(!("Notification" in window)){ alert("Bu brauzerda bildirishnoma qo'llab-quvvatlanmaydi."); return; }
+  if(Notification.permission === 'granted'){ alert("Bildirishnomalar yoqilgan."); return; }
+  try{
+    var p = Notification.requestPermission(function(){ updateTools(); });
+    if(p && p.then) p.then(updateTools);
+  }catch(e){}
+});
+document.getElementById('btnSound').addEventListener('click', function(){
+  settings.sound = !settings.sound; saveSettings(); ensureAudio();
+  if(settings.sound) beepOnce();
+  updateTools();
+});
+function systemNotify(r){
+  try{
+    if("Notification" in window && Notification.permission === 'granted'){
+      new Notification("⏰ "+r.title, { body: (r.note || "Vaqti bo'ldi")+" — "+r.time });
+    }
+  }catch(e){}
+}
+
+/* ---------- daily helpers ---------- */
+function rollForward(r){
+  var d = new Date(r.date+"T"+r.time);
+  do { d.setDate(d.getDate()+1); } while(d.getTime() <= Date.now());
+  r.date = iso(d); r.fired = false; r.snoozeUntil = 0;
+}
+function completeDaily(r){
+  var today = todayStr();
+  r.lastDone = today; r.count = (r.count||0)+1;
+  if(r.date <= today) rollForward(r); else { r.snoozeUntil = 0; }
+}
+
+/* ---------- alarm flow ---------- */
+function checkDue(){
+  var now = Date.now();
+  items.forEach(function(r){
+    if(isDoneNow(r) || r.fired) return;
+    if(dueOf(r) <= now){
+      r.fired = true;
+      alarmQueue.push(r.id);
+      systemNotify(r);
+    }
+  });
+  save();
+  if(!currentAlarm && alarmQueue.length) showNextAlarm();
+}
+function showNextAlarm(){
+  while(alarmQueue.length){
+    var id = alarmQueue.shift();
+    var r = items.find(function(x){ return x.id===id; });
+    if(r && !isDoneNow(r)){
+      currentAlarm = r;
+      document.getElementById('alTitle').textContent = r.title;
+      document.getElementById('alTime').textContent = r.time+" · "+fmtDate(iso(new Date(dueOf(r))));
+      document.getElementById('alNote').textContent = r.note || "Eslatma vaqti keldi!";
+      document.getElementById('ovAlarm').classList.add('show');
+      startRinging(r);
+      return;
+    }
+  }
+  currentAlarm = null;
+  document.getElementById('ovAlarm').classList.remove('show');
+  stopRinging();
+}
+function closeAlarm(){
+  stopRinging();
+  currentAlarm = null;
+  document.getElementById('ovAlarm').classList.remove('show');
+  render();
+  setTimeout(function(){ if(alarmQueue.length) showNextAlarm(); }, 250);
+}
+document.getElementById('alDone').addEventListener('click', function(){
+  var r = currentAlarm;
+  if(r){
+    if(r.repeat==="daily") completeDaily(r);
+    else { r.done = true; r.lastDone = todayStr(); }
+    save();
+  }
+  closeAlarm();
+});
+document.getElementById('alSnooze').addEventListener('click', function(){
+  if(currentAlarm){ currentAlarm.snoozeUntil = Date.now()+5*60000; currentAlarm.fired = false; save(); }
+  closeAlarm();
+});
+document.getElementById('alClose').addEventListener('click', function(){
+  if(currentAlarm && currentAlarm.repeat==="daily"){ rollForward(currentAlarm); save(); }
+  closeAlarm();
+});
+
+/* ---------- form ---------- */
+var ovForm = document.getElementById('ovForm');
+function fillToneSelect(current){
+  var sel = document.getElementById('fTone');
+  var html = '<option value="">Asosiy musiqa</option><option value="beep">Standart signal</option>';
+  tones.forEach(function(t){ html += '<option value="'+t.id+'">'+esc(t.name)+'</option>'; });
+  sel.innerHTML = html;
+  sel.value = current || "";
+  if(sel.value !== (current||"")) sel.value = "";
+}
+function openForm(r, presetDate){
+  ensureAudio();
+  document.getElementById('formTitle').textContent = r ? "Eslatmani tahrirlash" : "Yangi eslatma";
+  document.getElementById('fId').value = r ? r.id : "";
+  document.getElementById('fTitle').value = r ? r.title : "";
+  document.getElementById('fNote').value = r ? (r.note||"") : "";
+  var soon = new Date(Date.now()+30*60000);
+  var dVal, tVal;
+  if(r){ dVal = r.date; tVal = r.time; }
+  else if(presetDate && presetDate !== todayStr()){ dVal = presetDate; tVal = "09:00"; }
+  else { dVal = presetDate || iso(soon); tVal = hm(soon); }
+  document.getElementById('fDate').value = dVal;
+  document.getElementById('fTime').value = tVal;
+  document.getElementById('fRepeat').value = r ? r.repeat : "none";
+  document.getElementById('fFav').checked = r ? !!r.fav : false;
+  fillToneSelect(r ? r.toneId : "");
+  ovForm.classList.add('show');
+  setTimeout(function(){ document.getElementById('fTitle').focus(); }, 60);
+}
+function closeForm(){ ovForm.classList.remove('show'); }
+document.getElementById('fab').addEventListener('click', function(){
+  openForm(null, currentView()==='calendar' ? selDate : null);
+});
+document.getElementById('btnCancel').addEventListener('click', closeForm);
+ovForm.addEventListener('click', function(e){ if(e.target===ovForm) closeForm(); });
+
+document.querySelectorAll('.chip').forEach(function(c){
+  c.addEventListener('click', function(){
+    var d;
+    if(c.dataset.plus){ d = new Date(Date.now()+Number(c.dataset.plus)*60000); }
+    else { d = new Date(); d.setDate(d.getDate()+1); d.setHours(9,0,0,0); }
+    document.getElementById('fDate').value = iso(d);
+    document.getElementById('fTime').value = hm(d);
+  });
+});
+
+document.getElementById('btnSave').addEventListener('click', function(){
+  var title = document.getElementById('fTitle').value.trim();
+  var date = document.getElementById('fDate').value;
+  var time = document.getElementById('fTime').value;
+  if(!title){ document.getElementById('fTitle').focus(); return; }
+  if(!date || !time){ alert("Sana va soatni kiriting."); return; }
+  var id = document.getElementById('fId').value;
+  var data = {
+    title: title,
+    note: document.getElementById('fNote').value.trim(),
+    date: date, time: time,
+    repeat: document.getElementById('fRepeat').value,
+    toneId: document.getElementById('fTone').value,
+    fav: document.getElementById('fFav').checked
+  };
+  if(id){
+    var r = items.find(function(x){ return x.id===id; });
+    if(r){ Object.assign(r, data); r.done = false; r.fired = false; r.snoozeUntil = 0; if(r.repeat!=="daily") r.lastDone = r.lastDone; }
+  } else {
+    items.push(Object.assign({ id:uid(), done:false, fired:false, snoozeUntil:0, count:0, lastDone:"" }, data));
+  }
+  save(); closeForm(); render(); checkDue();
+  if(data.date){ selDate = data.date; var dd = new Date(data.date+"T00:00"); calY = dd.getFullYear(); calM = dd.getMonth(); renderCalendar(); }
+});
+
+/* ---------- cards ---------- */
+function card(r, kind){
+  var isDone = isDoneNow(r);
+  var due = new Date(dueOf(r));
+  var chipCls = isDone ? 'done' : (kind==='late' ? 'late' : '');
+  var mainText;
+  if(isDone) mainText = '✓ Bugun bajarildi';
+  else if(r.snoozeUntil) mainText = '⏰ '+hm(due)+' (kechiktirilgan)';
+  else mainText = '🕒 '+r.time+' · '+fmtDate(r.date);
+  var chips = '<span class="time-chip '+chipCls+'">'+mainText+'</span>';
+  if(r.repeat==="daily") chips += '<span class="time-chip rep">🔁 Har kuni'+(r.count?' · '+r.count+' marta':'')+'</span>';
+  if(r.toneId && r.toneId!=="") chips += '<span class="time-chip rep">🎵</span>';
+  return '<div class="item'+(isDone?' done':'')+'">'+
+    '<button class="check" data-toggle="'+r.id+'" title="Bajarildi">'+(isDone?'✓':'')+'</button>'+
+    '<div class="item-main"><div class="item-title">'+esc(r.title)+'</div>'+
+    (r.note?'<div class="item-note">'+esc(r.note)+'</div>':'')+
+    '<div class="chips">'+chips+'</div></div>'+
+    '<div class="item-actions">'+
+      '<button class="mini star'+(r.fav?' on':'')+'" data-star="'+r.id+'" title="Tanlanganlarga">'+(r.fav?'★':'☆')+'</button>'+
+      '<button class="mini" data-edit="'+r.id+'" title="Tahrirlash">✎</button>'+
+      '<button class="mini del" data-del="'+r.id+'" title="O\'chirish">✕</button>'+
+    '</div></div>';
+}
+function handleCardClick(e){
+  var t = e.target.closest('[data-toggle],[data-edit],[data-del],[data-star]');
+  if(!t) return false;
+  var id = t.getAttribute('data-toggle') || t.getAttribute('data-edit') || t.getAttribute('data-del') || t.getAttribute('data-star');
+  var r = items.find(function(x){ return x.id===id; });
+  if(!r) return true;
+  var today = todayStr();
+  if(t.hasAttribute('data-toggle')){
+    if(r.repeat==="daily"){
+      if(r.lastDone===today){
+        r.lastDone = ""; r.count = Math.max(0,(r.count||1)-1);
+        r.date = today; r.snoozeUntil = 0; r.fired = dueOf(r) <= Date.now();
+      } else { completeDaily(r); }
+    } else {
+      r.done = !r.done;
+      r.lastDone = r.done ? today : "";
+      if(!r.done) r.fired = dueOf(r) <= Date.now();
+    }
+    save(); render();
+  } else if(t.hasAttribute('data-star')){
+    r.fav = !r.fav; save(); render();
+  } else if(t.hasAttribute('data-edit')){
+    openForm(r);
+  } else if(t.hasAttribute('data-del')){
+    if(confirm("Eslatma o'chirilsinmi?")){ items = items.filter(function(x){ return x.id!==id; }); save(); render(); }
+  }
+  return true;
+}
+['list','favList'].forEach(function(id){
+  document.getElementById(id).addEventListener('click', handleCardClick);
+});
+
+/* ---------- plan / fav render ---------- */
+function renderStats(){
+  var now = Date.now(), today = todayStr();
+  var late = items.filter(function(r){ return !isDoneNow(r) && r.fired && dueOf(r) < now; });
+  document.getElementById('stToday').textContent = items.filter(function(r){ return r.repeat==="daily" || r.date===today; }).length;
+  document.getElementById('stDone').textContent = items.filter(function(r){ return r.lastDone===today; }).length;
+  document.getElementById('stLate').textContent = late.length;
+
+  var sorted = items.slice().sort(function(a,b){ return dueOf(a)-dueOf(b); });
+  var upcoming = sorted.filter(function(r){ return !isDoneNow(r) && dueOf(r) > now; })[0];
+  var nb = document.getElementById('nextBox');
+  if(upcoming){
+    var mins = Math.max(0, Math.round((dueOf(upcoming)-now)/60000));
+    var left = mins<60 ? mins+" daqiqadan keyin" : (mins<1440 ? Math.floor(mins/60)+" soat "+(mins%60)+" daqiqadan keyin" : Math.floor(mins/1440)+" kundan keyin");
+    nb.innerHTML = 'Keyingi eslatma · '+left+'<b>'+esc(upcoming.title)+' — '+upcoming.time+'</b>';
+  } else {
+    nb.textContent = "Rejalashtirilgan eslatma yo'q. + tugmasi bilan qo'shing.";
+  }
+}
+function renderPlan(){
+  var now = Date.now(), today = todayStr();
+  var tomorrowD = new Date(); tomorrowD.setDate(tomorrowD.getDate()+1);
+  var tomorrow = iso(tomorrowD);
+  var sorted = items.slice().sort(function(a,b){ return dueOf(a)-dueOf(b); });
+  var late = [], todayL = [], tomL = [], later = [], done = [];
+  sorted.forEach(function(r){
+    if(isDoneNow(r)){ done.push(r); return; }
+    var due = dueOf(r), dStr = iso(new Date(due));
+    if(due < now && r.fired) late.push(r);
+    else if(dStr <= today) todayL.push(r);
+    else if(dStr === tomorrow) tomL.push(r);
+    else later.push(r);
+  });
+  function group(title, arr, kind, cls){
+    if(!arr.length) return '';
+    return '<div class="group-title '+(cls||'')+'">'+title+' · '+arr.length+'</div>'+arr.map(function(r){ return card(r,kind); }).join('');
+  }
+  var html = group('Kechikkan', late, 'late', 'late') + group('Bugun', todayL, 'today') +
+    group('Ertaga', tomL, 'tom') + group('Keyingi kunlar', later, 'later') + group('Bajarilgan', done, 'done');
+  if(!html) html = '<div class="empty"><span class="big">📝</span>Hali eslatma yo\'q.<br>Pastdagi <b>+</b> tugmasi bilan birinchi eslatmangizni qo\'shing.</div>';
+  document.getElementById('list').innerHTML = html;
+}
+function renderFav(){
+  var favs = items.filter(function(r){ return r.fav; }).sort(function(a,b){
+    if((a.repeat==="daily") !== (b.repeat==="daily")) return a.repeat==="daily" ? -1 : 1;
+    return dueOf(a)-dueOf(b);
+  });
+  var el = document.getElementById('favList');
+  if(!favs.length){
+    el.innerHTML = '<div class="empty"><span class="big">⭐</span>Tanlangan eslatmalar yo\'q.<br>Eslatmadagi <b>☆</b> belgisini bosing — u shu yerga tushadi. Har kuni takrorlanadigan muhim ishlar uchun qulay.</div>';
+    return;
+  }
+  var now = Date.now();
+  el.innerHTML = '<div class="group-title">Tanlanganlar · '+favs.length+'</div>' +
+    favs.map(function(r){ return card(r, (!isDoneNow(r) && r.fired && dueOf(r)<now) ? 'late' : 'x'); }).join('');
+}
+
+/* ---------- calendar ---------- */
+function initCal(){ var d = new Date(); calY = d.getFullYear(); calM = d.getMonth(); selDate = iso(d); }
+function dayItems(ds){
+  var today = todayStr();
+  return items.filter(function(r){ return r.repeat==="daily" ? ds >= today : r.date===ds; })
+    .sort(function(a,b){ return a.time.localeCompare(b.time); });
+}
+function renderCalendar(){
+  var el = document.getElementById('calendar');
+  var first = new Date(calY, calM, 1);
+  var offset = (first.getDay()+6)%7;
+  var days = new Date(calY, calM+1, 0).getDate();
+  var today = todayStr();
+  var dows = ['Du','Se','Ch','Pa','Ju','Sh','Ya'];
+  var h = '<div class="cal"><div class="cal-head"><button class="cal-nav" data-cal="-1">‹</button><h3>'+cap(uzMonths[calM])+' '+calY+'</h3><button class="cal-nav" data-cal="1">›</button></div><div class="cal-grid">';
+  dows.forEach(function(d){ h += '<div class="cal-dow">'+d+'</div>'; });
+  for(var i=0;i<offset;i++) h += '<div></div>';
+  for(var d=1; d<=days; d++){
+    var ds = calY+'-'+p2(calM+1)+'-'+p2(d);
+    var has = items.some(function(r){ return r.repeat!=="daily" && r.date===ds; });
+    h += '<button class="cal-day'+(ds===today?' today':'')+(ds===selDate?' sel':'')+'" data-day="'+ds+'">'+d+(has?'<span class="dot"></span>':'')+'</button>';
+  }
+  h += '</div></div>';
+  var sd = new Date(selDate+"T00:00");
+  var list = dayItems(selDate);
+  h += '<div class="day-head"><h3>'+sd.getDate()+' '+uzMonths[sd.getMonth()]+', '+uzDays[sd.getDay()]+'</h3><button class="btn small dark" data-addday="1">+ Shu kunga</button></div>';
+  if(list.length) h += list.map(function(r){ return card(r, 'x'); }).join('');
+  else h += '<div class="empty" style="padding:26px 10px;"><span class="big">🗓️</span>Bu kunga eslatma yo\'q.</div>';
+  el.innerHTML = h;
+}
+document.getElementById('calendar').addEventListener('click', function(e){
+  var nav = e.target.closest('[data-cal]');
+  if(nav){
+    calM += Number(nav.getAttribute('data-cal'));
+    if(calM<0){ calM=11; calY--; } if(calM>11){ calM=0; calY++; }
+    renderCalendar(); return;
+  }
+  var day = e.target.closest('[data-day]');
+  if(day){ selDate = day.getAttribute('data-day'); renderCalendar(); return; }
+  if(e.target.closest('[data-addday]')){ openForm(null, selDate); return; }
+  if(handleCardClick(e)) return;
+});
+
+/* ---------- music view ---------- */
+function renderMusic(){
+  var el = document.getElementById('toneList');
+  var msg = document.getElementById('toneMsg');
+  msg.textContent = toneDbOk ? "" : "Bu brauzerda musiqani saqlash imkoni yo'q (xotira ruxsati o'chirilgan bo'lishi mumkin).";
+  function row(id, name, sub, canDel){
+    var on = settings.toneId===id;
+    return '<div class="tone-row">'+
+      '<button class="tone-pick'+(on?' on':'')+'" data-pick="'+id+'" title="Asosiy qilish">✓</button>'+
+      '<div class="tone-name">'+esc(name)+(sub?'<small>'+sub+'</small>':'')+'</div>'+
+      '<button class="mini" data-prev="'+id+'" title="Tinglash">'+(previewId===id?'■':'▶')+'</button>'+
+      (canDel?'<button class="mini del" data-deltone="'+id+'" title="O\'chirish">✕</button>':'')+
+    '</div>';
+  }
+  var html = row('beep','Standart signal','Ichki ovozli signal', false);
+  tones.forEach(function(t){
+    html += row(t.id, t.name, (t.size/1048576).toFixed(1)+' MB', true);
+  });
+  if(!tones.length) html += '<div style="font-size:13px;color:var(--ink-soft);padding:12px 0 0;border-top:1px solid var(--line);">Hali musiqa yuklanmagan.</div>';
+  el.innerHTML = html;
+}
+document.getElementById('toneList').addEventListener('click', function(e){
+  var pick = e.target.closest('[data-pick]');
+  if(pick){ settings.toneId = pick.getAttribute('data-pick'); saveSettings(); renderMusic(); return; }
+  var prev = e.target.closest('[data-prev]');
+  if(prev){ previewTone(prev.getAttribute('data-prev')); return; }
+  var del = e.target.closest('[data-deltone]');
+  if(del){
+    var id = del.getAttribute('data-deltone');
+    if(!confirm("Musiqa o'chirilsinmi?")) return;
+    if(previewId===id) stopPreview();
+    dbDel(id).then(function(){
+      tones = tones.filter(function(t){ return t.id!==id; });
+      if(settings.toneId===id){ settings.toneId = "beep"; saveSettings(); }
+      items.forEach(function(r){ if(r.toneId===id) r.toneId = ""; });
+      save(); renderMusic(); render();
+    }).catch(function(){ alert("O'chirishda xatolik."); });
+  }
+});
+document.getElementById('toneFile').addEventListener('change', function(){
+  var files = Array.prototype.slice.call(this.files || []);
+  var input = this;
+  var chain = Promise.resolve();
+  files.forEach(function(f){
+    if(f.size > 25*1048576){ alert("«"+f.name+"» juda katta (25 MB dan oshmasin)."); return; }
+    var rec = { id: uid(), name: f.name.replace(/\.[^.]+$/,''), size: f.size, blob: f };
+    chain = chain.then(function(){ return dbPut(rec); }).then(function(){
+      var firstOne = tones.length===0;
+      tones.push(rec);
+      if(firstOne){ settings.toneId = rec.id; saveSettings(); }
+    });
+  });
+  chain.then(function(){ toneDbOk = true; renderMusic(); input.value = ""; })
+       .catch(function(){ toneDbOk = false; renderMusic(); input.value = ""; });
+});
+
+/* ---------- tabs / render ---------- */
+function currentView(){
+  var a = document.querySelector('.tab.active');
+  return a ? a.getAttribute('data-view') : 'plan';
+}
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    document.getElementById('view-'+tab.getAttribute('data-view')).classList.add('active');
+    render();
+  });
+});
+
+function render(){
+  renderStats();
+  renderPlan();
+  renderFav();
+  renderCalendar();
+  renderMusic();
+  updateTools();
+}
+
+/* ---------- init ---------- */
+load();
+initCal();
+tickClock();
+render();
+checkDue();
+dbAll().then(function(list){ tones = list; toneDbOk = true; render(); })
+       .catch(function(){ toneDbOk = false; renderMusic(); });
+setInterval(function(){ tickClock(); checkDue(); }, 1000);
+setInterval(function(){ renderStats(); renderPlan(); renderFav(); renderCalendar(); }, 30000);
+document.addEventListener('click', ensureAudio, { once:true });
+
+})();
+</script>
+</body>
+</html>
